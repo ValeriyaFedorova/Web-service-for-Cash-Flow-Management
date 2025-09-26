@@ -1,0 +1,123 @@
+<div class="row mb-4">
+    <!-- Общая статистика -->
+    <div class="col-lg-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0"><i class="bi bi-graph-up"></i> Общая статистика</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="border-end">
+                            <div class="h5 mb-1">{{ total_transactions_count }}</div>
+                            <small class="text-muted">Всего записей</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="border-end">
+                            <div class="h5 mb-1 amount-positive">{{ overall_income }} ₽</div>
+                            <small class="text-muted">Всего пополнений</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div>
+                            <div class="h5 mb-1 amount-negative">{{ overall_expense }} ₽</div>
+                            <small class="text-muted">Всего списаний</small>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="text-center">
+                    <div class="h4 {% if overall_balance >= 0 %}amount-positive{% else %}amount-negative{% endif %}">
+                        Баланс: {{ overall_balance }} ₽
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика по фильтрам -->
+    {% if filter_applied %}
+    <div class="col-lg-6 mb-3">
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+                <h6 class="card-title mb-0"><i class="bi bi-funnel"></i> Статистика по фильтрам</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="border-end">
+                            <div class="h5 mb-1">{{ filtered_count }}</div>
+                            <small class="text-muted">Найдено записей</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="border-end">
+                            <div class="h5 mb-1 amount-positive">{{ filtered_income }} ₽</div>
+                            <small class="text-muted">Пополнения</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div>
+                            <div class="h5 mb-1 amount-negative">{{ filtered_expense }} ₽</div>
+                            <small class="text-muted">Списания</small>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="text-center">
+                    <div class="h4 {% if filtered_balance >= 0 %}amount-positive{% else %}amount-negative{% endif %}">
+                        Баланс: {{ filtered_balance }} ₽
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Детальная статистика -->
+{% if category_stats or status_stats %}
+<div class="row mb-4">
+    {% if category_stats %}
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0"><i class="bi bi-tags"></i> Топ категорий</h6>
+            </div>
+            <div class="card-body">
+                {% for stat in category_stats %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>{{ stat.category__name }} ({{ stat.type__name }})</span>
+                    <strong class="{% if stat.type__name == 'Пополнение' %}amount-positive{% else %}amount-negative{% endif %}">
+                        {{ stat.total_amount }} ₽
+                    </strong>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if status_stats %}
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0"><i class="bi bi-info-circle"></i> По статусам</h6>
+            </div>
+            <div class="card-body">
+                {% for stat in status_stats %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>{{ stat.status__name }}</span>
+                    <div>
+                        <span class="badge bg-secondary me-2">{{ stat.count }} зап.</span>
+                        <strong>{{ stat.total_amount }} ₽</strong>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endif %}

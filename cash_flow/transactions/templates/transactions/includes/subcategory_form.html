@@ -1,0 +1,33 @@
+<div class="modal fade" id="addSubcategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавить подкатегорию</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'dictionary_management' %}">
+                {% csrf_token %}
+                <input type="hidden" name="model_type" value="subcategory">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="subcategory_name" class="form-label">Название подкатегории</label>
+                        <input type="text" class="form-control" id="subcategory_name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="subcategory_category" class="form-label">Категория</label>
+                        <select class="form-select" id="subcategory_category" name="category" required>
+                            <option value="">Выберите категорию</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }} ({{ category.type }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

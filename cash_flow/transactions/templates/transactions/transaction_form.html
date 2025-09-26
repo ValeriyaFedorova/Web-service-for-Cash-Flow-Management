@@ -1,0 +1,274 @@
+{% extends 'transactions/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Управление ДДС{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">
+                    <i class="bi bi-{% if 'Создание' in title %}plus-circle{% else %}pencil{% endif %}"></i> 
+                    {{ title }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" id="transaction-form">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row g-3">
+                        <!-- Дата -->
+                        <div class="col-md-6">
+                            <label for="{{ form.created_date.id_for_label }}" class="form-label">
+                                {{ form.created_date.label }}
+                            </label>
+                            {{ form.created_date }}
+                            <div class="form-text">Текущая дата установлена автоматически</div>
+                            {% if form.created_date.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.created_date.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Статус -->
+                        <div class="col-md-6">
+                            <label for="{{ form.status.id_for_label }}" class="form-label">
+                                {{ form.status.label }}
+                            </label>
+                            {{ form.status }}
+                            {% if form.status.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.status.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Тип -->
+                        <div class="col-md-6">
+                            <label for="{{ form.type.id_for_label }}" class="form-label">
+                                {{ form.type.label }}
+                            </label>
+                            {{ form.type }}
+                            {% if form.type.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.type.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Категория -->
+                        <div class="col-md-6">
+                            <label for="{{ form.category.id_for_label }}" class="form-label">
+                                {{ form.category.label }}
+                            </label>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.category.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Подкатегория -->
+                        <div class="col-md-6">
+                            <label for="{{ form.subcategory.id_for_label }}" class="form-label">
+                                {{ form.subcategory.label }}
+                            </label>
+                            {{ form.subcategory }}
+                            {% if form.subcategory.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.subcategory.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Сумма -->
+                        <div class="col-md-6">
+                            <label for="{{ form.amount.id_for_label }}" class="form-label">
+                                {{ form.amount.label }}
+                            </label>
+                            <div class="input-group">
+                                {{ form.amount }}
+                                <span class="input-group-text">₽</span>
+                            </div>
+                            {% if form.amount.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.amount.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Комментарий -->
+                        <div class="col-12">
+                            <label for="{{ form.comment.id_for_label }}" class="form-label">
+                                {{ form.comment.label }}
+                            </label>
+                            {{ form.comment }}
+                            <div class="form-text">Не более 500 символов</div>
+                            {% if form.comment.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.comment.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> {{ submit_text }}
+                        </button>
+                        <a href="{% url 'transaction_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Отмена
+                        </a>
+                        {% if 'Редактирование' in title %}
+                        <a href="{% url 'transaction_delete' transaction.pk %}" class="btn btn-outline-danger float-end">
+                            <i class="bi bi-trash"></i> Удалить
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Подсказка -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6><i class="bi bi-info-circle"></i> Информация</h6>
+                <ul class="small text-muted mb-0">
+                    <li>Поля, помеченные *, обязательны для заполнения</li>
+                    <li>Дата операции автоматически устанавливается на сегодня</li>
+                    <li>Категории и подкатегории зависят от выбранного типа операции</li>
+                    <li>Если нужной категории нет, вы можете добавить её в разделе "Справочники"</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Установка текущей даты для новой записи
+    const dateField = document.getElementById('id_created_date');
+    
+    // Проверяем, это форма создания (нет ID в URL) или редактирования
+    const isEditForm = window.location.pathname.includes('/edit/');
+    
+    if (dateField && !isEditForm && !dateField.value) {
+        // Устанавливаем текущую дату в формате YYYY-MM-DD
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        dateField.value = `${year}-${month}-${day}`;
+    }
+    
+    // Динамическая загрузка категорий при изменении типа
+    const typeSelect = document.getElementById('id_type');
+    const categorySelect = document.getElementById('id_category');
+    const subcategorySelect = document.getElementById('id_subcategory');
+    
+    function loadCategories(typeId) {
+        if (!typeId) {
+            categorySelect.innerHTML = '<option value="">---------</option>';
+            subcategorySelect.innerHTML = '<option value="">---------</option>';
+            return;
+        }
+        
+        fetch(`/ajax/load-categories/?type_id=${typeId}`)
+            .then(response => response.json())
+            .then(data => {
+                categorySelect.innerHTML = '<option value="">---------</option>';
+                data.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    categorySelect.appendChild(option);
+                });
+                
+                // Сброс подкатегорий
+                subcategorySelect.innerHTML = '<option value="">---------</option>';
+            })
+            .catch(error => console.error('Error loading categories:', error));
+    }
+    
+    function loadSubcategories(categoryId) {
+        if (!categoryId) {
+            subcategorySelect.innerHTML = '<option value="">---------</option>';
+            return;
+        }
+        
+        fetch(`/ajax/load-subcategories/?category_id=${categoryId}`)
+            .then(response => response.json())
+            .then(data => {
+                subcategorySelect.innerHTML = '<option value="">---------</option>';
+                data.forEach(subcategory => {
+                    const option = document.createElement('option');
+                    option.value = subcategory.id;
+                    option.textContent = subcategory.name;
+                    subcategorySelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error loading subcategories:', error));
+    }
+    
+    if (typeSelect) {
+        typeSelect.addEventListener('change', function() {
+            loadCategories(this.value);
+        });
+        
+        // Загружаем категории при загрузке страницы, если тип уже выбран
+        if (typeSelect.value) {
+            loadCategories(typeSelect.value);
+        }
+    }
+    
+    if (categorySelect) {
+        categorySelect.addEventListener('change', function() {
+            loadSubcategories(this.value);
+        });
+        
+        // Загружаем подкатегории при загрузке страницы, если категория уже выбрана
+        if (categorySelect.value) {
+            loadSubcategories(categorySelect.value);
+        }
+    }
+    
+    // Форматирование суммы при вводе
+    const amountInput = document.getElementById('id_amount');
+    if (amountInput) {
+        amountInput.addEventListener('blur', function() {
+            let value = parseFloat(this.value);
+            if (!isNaN(value)) {
+                this.value = value.toFixed(2);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends 'transactions/base.html' %}
+
+{% block title %}Управление справочниками - Управление ДДС{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-book"></i> Управление справочниками</h1>
+</div>
+
+<div class="row">
+    <!-- Статусы -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Статусы</h5>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addStatusModal">
+                    <i class="bi bi-plus"></i> Добавить
+                </button>
+            </div>
+            <div class="card-body">
+                {% if statuses %}
+                <div class="list-group">
+                    {% for status in statuses %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{ status.name }}</span>
+                        <form method="post" action="{% url 'delete_dictionary_item' 'status' status.pk %}" 
+                              class="d-inline" onsubmit="return confirm('Удалить статус?')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">Нет статусов</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Типы -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Типы операций</h5>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addTypeModal">
+                    <i class="bi bi-plus"></i> Добавить
+                </button>
+            </div>
+            <div class="card-body">
+                {% if types %}
+                <div class="list-group">
+                    {% for type in types %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{ type.name }}</span>
+                        <form method="post" action="{% url 'delete_dictionary_item' 'type' type.pk %}" 
+                              class="d-inline" onsubmit="return confirm('Удалить тип?')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">Нет типов операций</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Категории -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Категории</h5>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                    <i class="bi bi-plus"></i> Добавить
+                </button>
+            </div>
+            <div class="card-body">
+                {% if categories %}
+                <div class="list-group">
+                    {% for category in categories %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ category.name }}</strong>
+                            <br>
+                            <small class="text-muted">Тип: {{ category.type }}</small>
+                        </div>
+                        <form method="post" action="{% url 'delete_dictionary_item' 'category' category.pk %}" 
+                              class="d-inline" onsubmit="return confirm('Удалить категорию?')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">Нет категорий</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Подкатегории -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Подкатегории</h5>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addSubcategoryModal">
+                    <i class="bi bi-plus"></i> Добавить
+                </button>
+            </div>
+            <div class="card-body">
+                {% if subcategories %}
+                <div class="list-group">
+                    {% for subcategory in subcategories %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ subcategory.name }}</strong>
+                            <br>
+                            <small class="text-muted">Категория: {{ subcategory.category }}</small>
+                        </div>
+                        <form method="post" action="{% url 'delete_dictionary_item' 'subcategory' subcategory.pk %}" 
+                              class="d-inline" onsubmit="return confirm('Удалить подкатегорию?')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">Нет подкатегорий</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальные окна для добавления -->
+{% include 'transactions/includes/status_form.html' %}
+{% include 'transactions/includes/type_form.html' %}
+{% include 'transactions/includes/category_form.html' %}
+{% include 'transactions/includes/subcategory_form.html' %}
+
+{% endblock %}
