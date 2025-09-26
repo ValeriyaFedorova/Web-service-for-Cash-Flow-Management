@@ -36,7 +36,6 @@
 ```bash
 # Клонируйте репозиторий
 git clone <url-репозитория>
-cd cash_flow
 
 # Создайте виртуальное окружение
 python -m venv venv
@@ -61,12 +60,11 @@ pip install -r requirements.txt
 ### 3. Настройка базы данных
 
 ```bash
+cd cash_flow
 # Примените миграции
 python manage.py makemigrations transactions
 python manage.py migrate
 
-# Создайте суперпользователя (опционально)
-python manage.py createsuperuser
 ```
 
 ### 4. Запуск приложения
